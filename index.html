@@ -18,8 +18,25 @@
       margin: 10px;
       font-size: 16px;
     }
-    #results {
-      margin-top: 20px;
+    .details {
+      margin-left: 143px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+    .field {
+      margin-bottom: 5px;
+      overflow: hidden; 
+    }
+    .field-name {
+      font-weight: bold;
+      float: left; 
+      width: 120px; 
+      text-align: left; 
+    }
+    .field-value {
+      margin-left: 130px;
+      display: block; 
     }
   </style>
 </head>
@@ -39,20 +56,43 @@
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/datapoint?laundryCode=${laundryCode}`);
-      const data = await response.json();
+      console.log(`Fetching details for laundryCode: ${laundryCode}`);
 
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = '';
+      try {
+        const response = await fetch(`http://localhost:3000/datapoint?laundryCode=${laundryCode}`);
+        const data = await response.json();
 
-      if (response.status === 200) {
-        data.forEach(item => {
-          const itemDiv = document.createElement('div');
-          itemDiv.innerHTML = `<pre>${JSON.stringify(item, null, 2)}</pre>`;
-          resultsDiv.appendChild(itemDiv);
-        });
-      } else {
-        resultsDiv.innerHTML = `<p>No matching documents found</p>`;
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '';
+
+        if (response.status === 200) {
+          data.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('details');
+            Object.keys(item).forEach(key => {
+              const fieldDiv = document.createElement('div');
+              fieldDiv.classList.add('field');
+
+              const fieldNameSpan = document.createElement('span');
+              fieldNameSpan.classList.add('field-name');
+              fieldNameSpan.textContent = `${key}:`;
+              fieldDiv.appendChild(fieldNameSpan);
+
+              const valueSpan = document.createElement('span');
+              valueSpan.classList.add('field-value');
+              valueSpan.textContent = `${item[key]}`;
+              fieldDiv.appendChild(valueSpan);
+
+              itemDiv.appendChild(fieldDiv);
+            });
+            resultsDiv.appendChild(itemDiv);
+          });
+        } else {
+          resultsDiv.innerHTML = `<p>No matching documents found</p>`;
+        }
+      } catch (error) {
+        console.error('Error fetching laundry details:', error);
+        alert('Error fetching laundry details. Please check console for more details.');
       }
     }
   </script>
