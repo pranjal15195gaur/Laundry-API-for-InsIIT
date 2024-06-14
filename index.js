@@ -1,9 +1,11 @@
 const express = require('express');
 const db = require('./firebaseConfig');
+const cors = require('cors');
 
 const app = express();
 const port = 3000;
 
+app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
 
 // Endpoint to get a document by laundryCode

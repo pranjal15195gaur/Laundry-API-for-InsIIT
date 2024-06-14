@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laundry Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    #results {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Get Laundry Details</h1>
+    <input type="text" id="laundryCode" placeholder="Enter Laundry Code">
+    <button onclick="fetchLaundryDetails()">Search</button>
+    <div id="results"></div>
+  </div>
+
+  <script>
+    async function fetchLaundryDetails() {
+      const laundryCode = document.getElementById('laundryCode').value;
+      if (!laundryCode) {
+        alert('Please enter a laundry code');
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3000/datapoint?laundryCode=${laundryCode}`);
+      const data = await response.json();
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      if (response.status === 200) {
+        data.forEach(item => {
+          const itemDiv = document.createElement('div');
+          itemDiv.innerHTML = `<pre>${JSON.stringify(item, null, 2)}</pre>`;
+          resultsDiv.appendChild(itemDiv);
+        });
+      } else {
+        resultsDiv.innerHTML = `<p>No matching documents found</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
